@@ -1,0 +1,42 @@
+name: rcicd
+version: "1.0"
+author: caryxiao <289872225@qq.com>
+about: 自动化部署工具
+args:
+  - verbose:
+      short: v
+      multiple: true
+      about: 日志显示
+subcommands:
+  - build:
+      about: 根据项目的rcicd.yaml生成配置文件
+      version: "1.0"
+      args:
+        - config:
+            short: c
+            long: config
+            value_name: FILE
+            default_value: rcicd.yaml
+            about: 默认配置文件
+        - app:
+            short: p
+            long: app
+            multiple: true
+            about: 设置需要build的app, 生成的配置文件会存储在项目目录下的地址 .rcicd/{app_name}
+  - publish:
+      about: 发布项目到服务器, 并根据配置文件自动部署项目
+      version: "1.0"
+      args:
+        - app:
+            short: p
+            long: app
+            multiple: true
+            about: 设置需要发布的app, 会使用存储在项目目录下的配置文件 .rcicd/{app_name}
+        - hosts:
+            long: hosts
+            multiple: true
+            about: 设置需要发布的服务器环境
+            value_names:
+              - live
+              - staging
+              - dev
