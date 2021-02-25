@@ -1,0 +1,2 @@
+# rcicd
+Simple CI/CD
