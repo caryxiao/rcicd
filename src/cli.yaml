@@ -12,31 +12,36 @@ subcommands:
       about: 根据项目的rcicd.yaml生成配置文件
       version: "1.0"
       args:
+        - APP:
+            about: rcicd.yaml中配置的app名称 配置文件生成的位置在项目目录下.rcicd/{app_name}_{env}
+            required: true
+            index: 1
+        - ENV:
+            required: true
+            about: 按照指定环境变量生成配置
+            index: 2
         - config:
             short: c
             long: config
             value_name: FILE
+            takes_value: true
             default_value: rcicd.yaml
             about: 默认配置文件
-        - app:
-            short: p
-            long: app
-            multiple: true
-            about: 设置需要build的app, 生成的配置文件会存储在项目目录下的地址 .rcicd/{app_name}
   - publish:
       about: 发布项目到服务器, 并根据配置文件自动部署项目
       version: "1.0"
       args:
-        - app:
-            short: p
-            long: app
-            multiple: true
-            about: 设置需要发布的app, 会使用存储在项目目录下的配置文件 .rcicd/{app_name}
+        - APP:
+            about: rcicd.yaml中配置的app名称 配置文件生成的位置在项目目录下.rcicd/{app_name}_{env}
+            required: true
+            index: 1
+        - ENV:
+            required: true
+            about: 使用指定环境变量生成的配置 .rcicd/{app_name}_{env}
+            index: 2
         - hosts:
             long: hosts
-            multiple: true
+            value_name: HOSTS
+            required: true
+            takes_value: true
             about: 设置需要发布的服务器环境
-            value_names:
-              - live
-              - staging
-              - dev

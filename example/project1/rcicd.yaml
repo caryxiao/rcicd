@@ -1,0 +1,43 @@
+envs:
+  - env: "base"
+    vars:
+      remote_deploy_dir: "/data/projects" # 部署到服务器的目录地址
+      hosts: "" # 需要部署的hosts
+      proj_top_domain: "rcicd.local" # 项目顶级域名
+      proj_domain_prefix: "" # 域名前缀, 默认为空
+      proj_remote_user: "nginx" # 服务器用户
+      proj_remote_group: "nginx" # 服务器用户所属用户组, 用于分配权限
+      proj_dir_suffix: ""
+  - env: "dev"
+    vars:
+      top_domain: "rcicd.d"
+      domain_prefix: "laravel"
+      hosts: "dev"
+  - env: "staging"
+    vars:
+      top_domain: "staging-rcicd.d"
+      domain_prefix: "laravel"
+      hosts: "staging"
+  - env: "prod"
+    vars:
+      top_domain: "rcicd.prod"
+      domain_prefix: "laravel"
+deploy:
+  - env: ["dev", "staging"]
+    stages:
+      - stage: "build"
+        steps:
+          - sh: "composer install"
+          - sh: "ls -la && pwd"
+      - stage: "test"
+        setps:
+          - sh: "echo {$deploy_env}"
+  - env: ["live"]
+    stages:
+      - stage: "build"
+        steps:
+          - sh: "composer install"
+          - sh: "ls -la && pwd"
+      - stage: "test"
+        setps:
+          - sh: "echo live"
