@@ -20,11 +20,11 @@ impl<'a> Vars<'a> {
         }
     }
 
-    pub fn insert(&'a mut self, k: &'a str, v: String) -> Option<String> {
+    pub fn insert(&mut self, k: &'a str, v: String) -> Option<String> {
         self.map.insert(k, v)
     }
 
-    pub fn get(&'a self, k: &'a str) -> Option<&'a String> {
+    pub fn get(&self, k: &'a str) -> Option<&String> {
         self.map.get(k)
     }
 }
@@ -37,11 +37,11 @@ impl<'a> Env<'a> {
         }
     }
 
-    pub fn get_name(&'a self) -> &'a str {
+    pub fn get_name(&self) -> &'a str {
         self.name
     }
 
-    pub fn set_name(&'a mut self, name: &'a str) {
+    pub fn set_name(&mut self, name: &'a str) {
         self.name = name;
     }
 }
