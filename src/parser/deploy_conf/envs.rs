@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+pub const ENV_BASE_NAME : &'static str = "base";
+
 #[derive(Debug)]
 pub struct Vars<'a> {
     map: HashMap<&'a str, String>
@@ -43,5 +45,9 @@ impl<'a> Env<'a> {
 
     pub fn set_name(&mut self, name: &'a str) {
         self.name = name;
+    }
+
+    pub fn load_serde_yaml_mapping(&mut self, serde_mapping: serde_yaml::Mapping) -> &mut Self {
+        self
     }
 }

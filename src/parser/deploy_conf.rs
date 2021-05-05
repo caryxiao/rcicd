@@ -36,6 +36,20 @@ impl<'a> Conf<'a> {
 
         let fd = fs::File::open(final_file.as_path())?;
         let content: serdeValue = serde_yaml::from_reader(fd)?;
+        if let serdeValue::Mapping(serde_mapping) = content {
+            let envs = serde_mapping.get(&serdeValue::String("envs".to_string())).unwrap();
+            if let Some(serde_sequence) = envs.as_sequence() {
+                let env_names: Vec<String> = serde_sequence.iter().filter_map(|v| {
+                    let sub = v.as_mapping().unwrap();
+                    let key_name = serde_yaml::from_str("env").unwrap();
+                    if sub.contains_key(&key_name) {
+                        return Some(sub.get(&key_name).unwrap().as_str());
+                    }
+                    None
+                }).map(|v|v.unwrap().to_string()).filter(|v|!v.is_empty()).collect::<Vec<String>>();
+                dbg!(env_names);
+            }
+        }
         let mut conf = Self::new();
         let env1 = Env::new("aa");
         conf.set_env(env1);

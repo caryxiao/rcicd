@@ -22,6 +22,7 @@ envs:
     vars:
       top_domain: "rcicd.prod"
       domain_prefix: "laravel"
+  - env: ""
 deploy:
   - env: ["dev", "staging"]
     stages:
