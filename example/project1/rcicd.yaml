@@ -10,18 +10,18 @@ envs:
       proj_dir_suffix: ""
   - env: "dev"
     vars:
-      top_domain: "rcicd.d"
-      domain_prefix: "laravel"
+      proj_top_domain: "rcicd.d"
+      proj_domain_prefix: "laravel"
       hosts: "dev"
   - env: "staging"
     vars:
-      top_domain: "staging-rcicd.d"
-      domain_prefix: "laravel"
+      proj_top_domain: "staging-rcicd.d"
+      proj_domain_prefix: "laravel"
       hosts: "staging"
   - env: "prod"
     vars:
-      top_domain: "rcicd.prod"
-      domain_prefix: "laravel"
+      proj_top_domain: "rcicd.prod"
+      proj_domain_prefix: "laravel"
   - env: ""
 deploy:
   - env: ["dev", "staging"]

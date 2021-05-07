@@ -1,29 +1,31 @@
-use std::{env, fs};
-use std::path::Path;
-use serde_yaml::Value as serdeValue;
-use std::error::Error;
 use crate::parser::deploy_conf::envs::Env;
+use serde_yaml::Value as serdeValue;
+use std::collections::hash_map::RandomState;
 use std::collections::HashMap;
+use std::error::Error;
+use std::path::Path;
+use std::{env, fs};
 
 mod envs;
 
 #[derive(Debug)]
-pub struct Conf<'a> {
-    envs: HashMap<String, envs::Env<'a>>,
+pub struct Conf {
+    envs: HashMap<String, envs::Env>,
 }
 
-trait ConfOperation<'a> {
-    fn set_env(&mut self, env: envs::Env<'a>);
+trait ConfOperation {
+    fn set_env(&mut self, env: envs::Env);
+    fn set_envs(&mut self, envs: HashMap<String, envs::Env>);
 }
 
-impl<'a> Conf<'a> {
+impl Conf {
     pub fn new() -> Self {
         Conf {
-            envs: HashMap::new()
+            envs: HashMap::new(),
         }
     }
 
-    pub fn from_yaml_file(file: &'a str) -> Result<Conf<'a>, Box<dyn Error>> {
+    pub fn from_yaml_file(file: &str) -> Result<Conf, Box<dyn Error>> {
         let mut final_file = Path::new(file).to_path_buf();
         // Determine whether the file is a relative path or an absolute path
         if file.starts_with("./") || !file.starts_with("/") {
@@ -36,29 +38,33 @@ impl<'a> Conf<'a> {
 
         let fd = fs::File::open(final_file.as_path())?;
         let content: serdeValue = serde_yaml::from_reader(fd)?;
-        if let serdeValue::Mapping(serde_mapping) = content {
-            let envs = serde_mapping.get(&serdeValue::String("envs".to_string())).unwrap();
-            if let Some(serde_sequence) = envs.as_sequence() {
-                let env_names: Vec<String> = serde_sequence.iter().filter_map(|v| {
-                    let sub = v.as_mapping().unwrap();
-                    let key_name = serde_yaml::from_str("env").unwrap();
-                    if sub.contains_key(&key_name) {
-                        return Some(sub.get(&key_name).unwrap().as_str());
-                    }
-                    None
-                }).map(|v|v.unwrap().to_string()).filter(|v|!v.is_empty()).collect::<Vec<String>>();
-                dbg!(env_names);
-            }
-        }
         let mut conf = Self::new();
-        let env1 = Env::new("aa");
-        conf.set_env(env1);
+        if let serdeValue::Mapping(serde_mapping) = content {
+            let envs = serde_mapping
+                .get(&serdeValue::String("envs".to_string()))
+                .unwrap();
+            conf.set_envs(init_envs(envs.as_sequence()));
+        }
+
         Ok(conf)
     }
 }
 
-impl<'a> ConfOperation<'a> for Conf<'a> {
-    fn set_env(&mut self, env: Env<'a>) {
+impl ConfOperation for Conf {
+    fn set_env(&mut self, env: Env) {
         self.envs.insert(env.get_name().to_string(), env);
     }
+
+    fn set_envs(&mut self, envs: HashMap<String, Env>) {
+        self.envs = envs;
+    }
+}
+
+fn init_envs(origin_envs: Option<&serde_yaml::Sequence>) -> HashMap<String, Env> {
+    let envs_op = envs::yaml_convert_envs(origin_envs);
+    envs_op.unwrap()
+}
+
+fn make_serde_str<'a>(s: &str) -> serdeValue {
+    serde_yaml::from_str(s).unwrap()
 }
