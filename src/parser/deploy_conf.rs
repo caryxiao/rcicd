@@ -40,10 +40,10 @@ impl Conf {
         let content: serdeValue = serde_yaml::from_reader(fd)?;
         let mut conf = Self::new();
         if let serdeValue::Mapping(serde_mapping) = content {
-            let envs = serde_mapping
+            let config_envs = serde_mapping
                 .get(&serdeValue::String("envs".to_string()))
                 .unwrap();
-            conf.set_envs(init_envs(envs.as_sequence()));
+            conf.set_envs(init_envs(config_envs.as_sequence()));
         }
 
         Ok(conf)
