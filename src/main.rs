@@ -1,4 +1,5 @@
 use clap::{load_yaml, App};
+mod deploy;
 mod parser;
 fn main() {
     let yaml = load_yaml!("cli.yaml");
@@ -13,6 +14,7 @@ fn main() {
                 dbg!(conf_file);
                 let prj_conf = parser::config::Conf::from_yaml_file(conf_file).expect("err");
                 dbg!(prj_conf);
+                deploy::runner::run();
             }
         }
     }

@@ -12,4 +12,4 @@ pub struct Stage<T> {
     steps: Vec<Step<T>>,
 }
 
-pub fn deploy_from_yaml() {}
+pub fn deploy_from_yaml(origin_envs: Option<&serde_yaml::Sequence>) {}

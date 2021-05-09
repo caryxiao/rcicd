@@ -23,9 +23,9 @@ envs:
       proj_top_domain: "rcicd.prod"
       proj_domain_prefix: "laravel"
   - env: ""
-deploy:
+stages:
   - env: ["dev", "staging"]
-    stages:
+    job:
       - stage: "build"
         steps:
           - sh: "composer install"
@@ -34,7 +34,7 @@ deploy:
         setps:
           - sh: "echo {deploy_env}"
   - env: ["live"]
-    stages:
+    job:
       - stage: "build"
         steps:
           - sh: "composer install"

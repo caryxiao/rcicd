@@ -5,8 +5,8 @@ use std::error::Error;
 use std::path::Path;
 use std::{env, fs};
 
-mod deploy;
 mod envs;
+mod stages;
 
 #[derive(Debug)]
 pub struct Conf {
@@ -40,10 +40,12 @@ impl Conf {
         let content: serdeValue = serde_yaml::from_reader(fd)?;
         let mut conf = Self::new();
         if let serdeValue::Mapping(serde_mapping) = content {
-            let config_envs = serde_mapping
+            let yaml_raw_envs = serde_mapping
                 .get(&serdeValue::String("envs".to_string()))
                 .unwrap();
-            conf.set_envs(init_envs(config_envs.as_sequence()));
+            conf.set_envs(init_envs(yaml_raw_envs.as_sequence()));
+            let yaml_raw_deploy = serde_mapping.get(&make_serde_str("stages")).unwrap();
+            let deploy_res = stages::deploy_from_yaml(yaml_raw_deploy.as_sequence());
         }
 
         Ok(conf)
@@ -61,8 +63,8 @@ impl ConfOperation for Conf {
 }
 
 fn init_envs(origin_envs: Option<&serde_yaml::Sequence>) -> HashMap<String, Env> {
-    let envs_op = envs::envs_from_yaml(origin_envs);
-    envs_op.unwrap()
+    let envs_res = envs::envs_from_yaml(origin_envs);
+    envs_res.unwrap()
 }
 
 fn make_serde_str<'a>(s: &str) -> serdeValue {
