@@ -32,7 +32,7 @@ deploy:
           - sh: "ls -la && pwd"
       - stage: "test"
         setps:
-          - sh: "echo {$deploy_env}"
+          - sh: "echo {deploy_env}"
   - env: ["live"]
     stages:
       - stage: "build"

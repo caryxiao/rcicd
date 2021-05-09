@@ -1,6 +1,4 @@
 use crate::parser::deploy_conf::make_serde_str;
-use std::borrow::Borrow;
-use std::collections::hash_map::RandomState;
 use std::collections::HashMap;
 
 pub const ENV_BASE_NAME: &'static str = "base";
