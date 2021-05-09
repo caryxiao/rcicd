@@ -1,10 +1,11 @@
-use crate::parser::deploy_conf::envs::Env;
+use crate::parser::config::envs::Env;
 use serde_yaml::Value as serdeValue;
 use std::collections::HashMap;
 use std::error::Error;
 use std::path::Path;
 use std::{env, fs};
 
+mod deploy;
 mod envs;
 
 #[derive(Debug)]
@@ -60,7 +61,7 @@ impl ConfOperation for Conf {
 }
 
 fn init_envs(origin_envs: Option<&serde_yaml::Sequence>) -> HashMap<String, Env> {
-    let envs_op = envs::yaml_convert_envs(origin_envs);
+    let envs_op = envs::envs_from_yaml(origin_envs);
     envs_op.unwrap()
 }
 
