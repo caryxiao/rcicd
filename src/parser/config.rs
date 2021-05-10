@@ -11,6 +11,7 @@ mod stages;
 #[derive(Debug)]
 pub struct Conf {
     envs: HashMap<String, envs::Env>,
+    stages: HashMap<String, stages::Stage>,
 }
 
 trait ConfOperation {
@@ -21,7 +22,8 @@ trait ConfOperation {
 impl Conf {
     pub fn new() -> Self {
         Conf {
-            envs: HashMap::new(),
+            envs: Default::default(),
+            stages: Default::default(),
         }
     }
 
@@ -43,7 +45,7 @@ impl Conf {
             let yaml_raw_envs = serde_mapping
                 .get(&serdeValue::String("envs".to_string()))
                 .unwrap();
-            conf.set_envs(init_envs(yaml_raw_envs.as_sequence()));
+            conf.set_envs(envs::envs_from_yaml(yaml_raw_envs.as_sequence()).unwrap());
             let yaml_raw_deploy = serde_mapping.get(&make_serde_str("stages")).unwrap();
             let deploy_res = stages::deploy_from_yaml(yaml_raw_deploy.as_sequence());
         }
@@ -60,11 +62,6 @@ impl ConfOperation for Conf {
     fn set_envs(&mut self, envs: HashMap<String, Env>) {
         self.envs = envs;
     }
-}
-
-fn init_envs(origin_envs: Option<&serde_yaml::Sequence>) -> HashMap<String, Env> {
-    let envs_res = envs::envs_from_yaml(origin_envs);
-    envs_res.unwrap()
 }
 
 fn make_serde_str<'a>(s: &str) -> serdeValue {

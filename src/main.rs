@@ -1,4 +1,6 @@
+use crate::parser::config::Conf;
 use clap::{load_yaml, App};
+
 mod deploy;
 mod parser;
 fn main() {

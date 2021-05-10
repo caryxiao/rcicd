@@ -1,15 +1,22 @@
+#[derive(Debug)]
+pub enum StepValue {
+    String(String),
+}
+
 /// 步骤
-pub struct Step<T> {
+#[derive(Debug)]
+pub struct Step {
     /// 调用名称
     /// 比如sh, 目前只有sh
     invoke_name: String,
-    value: T,
+    value: StepValue,
 }
 
 /// 阶段
-pub struct Stage<T> {
+#[derive(Debug)]
+pub struct Stage {
     name: String,
-    steps: Vec<Step<T>>,
+    steps: Vec<Step>,
 }
 
 pub fn deploy_from_yaml(origin_envs: Option<&serde_yaml::Sequence>) {}
