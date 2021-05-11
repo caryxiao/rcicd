@@ -1,4 +1,4 @@
-use crate::parser::config::make_serde_str;
+use crate::config::make_serde_str;
 use std::collections::HashMap;
 
 pub const ENV_BASE_NAME: &'static str = "base";
@@ -53,8 +53,8 @@ impl Env {
     }
 }
 
-fn get_base_envs(origin_envs: Option<&serde_yaml::Sequence>) -> Option<Env> {
-    let base = match origin_envs {
+fn get_base_envs(raw_yaml: Option<&serde_yaml::Sequence>) -> Option<Env> {
+    let base = match raw_yaml {
         Some(seq) => seq.iter().find_map(|v| {
             let sub_map = v.as_mapping().unwrap();
             let key_name = &make_serde_str("env");
@@ -86,16 +86,16 @@ fn get_base_envs(origin_envs: Option<&serde_yaml::Sequence>) -> Option<Env> {
     }
 }
 
-pub fn envs_from_yaml(origin_envs: Option<&serde_yaml::Sequence>) -> Option<HashMap<String, Env>> {
+pub fn envs_from_yaml(raw_yaml: Option<&serde_yaml::Sequence>) -> Option<HashMap<String, Env>> {
     let mut envs = HashMap::new();
-    let base_env = get_base_envs(origin_envs);
+    let base_env = get_base_envs(raw_yaml);
     if base_env.is_none() {
         return None;
     }
 
     let base_env = base_env.unwrap();
 
-    for item in origin_envs.unwrap() {
+    for item in raw_yaml.unwrap() {
         let item_map = item.as_mapping().unwrap();
         let name = item_map.get(&make_serde_str("env"));
         if name.is_none() {

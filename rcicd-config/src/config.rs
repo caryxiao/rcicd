@@ -1,4 +1,4 @@
-use crate::parser::config::envs::Env;
+use crate::config::envs::Env;
 use serde_yaml::Value as serdeValue;
 use std::collections::HashMap;
 use std::error::Error;

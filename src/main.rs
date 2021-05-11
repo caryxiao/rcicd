@@ -1,8 +1,7 @@
-use crate::parser::config::Conf;
 use clap::{load_yaml, App};
+use rcicd_config::config::Conf;
+use rcicd_deploy;
 
-mod deploy;
-mod parser;
 fn main() {
     let yaml = load_yaml!("cli.yaml");
     let matches = App::from(yaml).get_matches();
@@ -14,9 +13,9 @@ fn main() {
         if sub_cmd.eq("build") {
             if let Some(conf_file) = sub_cmd_args.value_of("config") {
                 dbg!(conf_file);
-                let prj_conf = parser::config::Conf::from_yaml_file(conf_file).expect("err");
+                let prj_conf = rcicd_config::config::Conf::from_yaml_file(conf_file).expect("err");
                 dbg!(prj_conf);
-                deploy::runner::run();
+                rcicd_deploy::runner::run();
             }
         }
     }

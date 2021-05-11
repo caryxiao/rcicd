@@ -4,12 +4,22 @@ version = "0.1.0"
 authors = ["caryxiao <289872225@qq.com>"]
 edition = "2018"
 
+[workspace]
+members = [
+    ".",
+    "rcicd-config",
+    "rcicd-helper",
+    "rcicd-deploy"
+]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 clap = { version = "3.0.0-beta.2", features = ["yaml"] }
 serde = "1.0"
 serde_yaml = "0.8"
+rcicd-config = { path = "rcicd-config" }
+rcicd-helper = { path = "rcicd-helper" }
+rcicd-deploy = { path = "rcicd-deploy" }
 
 [lib]
 name = "rcicd"
