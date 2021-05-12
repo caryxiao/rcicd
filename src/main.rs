@@ -1,8 +1,10 @@
 use clap::{load_yaml, App};
+use log::info;
 use rcicd_config::config::Conf;
 use rcicd_deploy;
 
 fn main() {
+    log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
     let yaml = load_yaml!("cli.yaml");
     let matches = App::from(yaml).get_matches();
     // 分析需要执行build还是publish
@@ -15,6 +17,7 @@ fn main() {
                 dbg!(conf_file);
                 let prj_conf = rcicd_config::config::Conf::from_yaml_file(conf_file).expect("err");
                 dbg!(prj_conf);
+                info!("config file: {}", conf_file);
                 rcicd_deploy::runner::run();
             }
         }
