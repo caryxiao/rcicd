@@ -8,7 +8,7 @@ use std::{env, fs};
 #[derive(Debug)]
 pub struct Conf {
     envs: HashMap<String, items::envs::Env>,
-    stages: HashMap<String, items::stages::Stage>,
+    jobs: HashMap<String, items::jobs::Job>,
 }
 
 trait ConfOperation {
@@ -20,7 +20,7 @@ impl Conf {
     pub fn new() -> Self {
         Conf {
             envs: Default::default(),
-            stages: Default::default(),
+            jobs: Default::default(),
         }
     }
 
@@ -43,8 +43,8 @@ impl Conf {
                 .get(&serdeValue::String("envs".to_string()))
                 .unwrap();
             conf.set_envs(items::envs::from_yaml(yaml_raw_envs.as_sequence()).unwrap());
-            let yaml_raw_deploy = serde_mapping.get(&items::make_serde_str("stages")).unwrap();
-            let deploy_res = items::stages::from_yaml(yaml_raw_deploy.as_sequence());
+            let yaml_raw_deploy = serde_mapping.get(&items::make_serde_str("jobs")).unwrap();
+            let deploy_res = items::jobs::from_yaml(yaml_raw_deploy.as_sequence());
         }
 
         Ok(conf)
