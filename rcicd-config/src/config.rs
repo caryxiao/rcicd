@@ -1,22 +1,19 @@
-use crate::config::envs::Env;
+use crate::items;
 use serde_yaml::Value as serdeValue;
 use std::collections::HashMap;
 use std::error::Error;
 use std::path::Path;
 use std::{env, fs};
 
-mod envs;
-mod stages;
-
 #[derive(Debug)]
 pub struct Conf {
-    envs: HashMap<String, envs::Env>,
-    stages: HashMap<String, stages::Stage>,
+    envs: HashMap<String, items::envs::Env>,
+    stages: HashMap<String, items::stages::Stage>,
 }
 
 trait ConfOperation {
-    fn set_env(&mut self, env: envs::Env);
-    fn set_envs(&mut self, envs: HashMap<String, envs::Env>);
+    fn set_env(&mut self, env: items::envs::Env);
+    fn set_envs(&mut self, envs: HashMap<String, items::envs::Env>);
 }
 
 impl Conf {
@@ -45,9 +42,9 @@ impl Conf {
             let yaml_raw_envs = serde_mapping
                 .get(&serdeValue::String("envs".to_string()))
                 .unwrap();
-            conf.set_envs(envs::envs_from_yaml(yaml_raw_envs.as_sequence()).unwrap());
-            let yaml_raw_deploy = serde_mapping.get(&make_serde_str("stages")).unwrap();
-            let deploy_res = stages::deploy_from_yaml(yaml_raw_deploy.as_sequence());
+            conf.set_envs(items::envs::from_yaml(yaml_raw_envs.as_sequence()).unwrap());
+            let yaml_raw_deploy = serde_mapping.get(&items::make_serde_str("stages")).unwrap();
+            let deploy_res = items::stages::from_yaml(yaml_raw_deploy.as_sequence());
         }
 
         Ok(conf)
@@ -55,15 +52,11 @@ impl Conf {
 }
 
 impl ConfOperation for Conf {
-    fn set_env(&mut self, env: Env) {
+    fn set_env(&mut self, env: items::envs::Env) {
         self.envs.insert(env.get_name().to_string(), env);
     }
 
-    fn set_envs(&mut self, envs: HashMap<String, Env>) {
+    fn set_envs(&mut self, envs: HashMap<String, items::envs::Env>) {
         self.envs = envs;
     }
-}
-
-fn make_serde_str<'a>(s: &str) -> serdeValue {
-    serde_yaml::from_str(s).unwrap()
 }

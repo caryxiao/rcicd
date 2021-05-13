@@ -1,4 +1,4 @@
-use crate::config::make_serde_str;
+use crate::items::make_serde_str;
 use std::collections::HashMap;
 
 pub const ENV_BASE_NAME: &'static str = "base";
@@ -86,7 +86,7 @@ fn get_base_envs(raw_yaml: Option<&serde_yaml::Sequence>) -> Option<Env> {
     }
 }
 
-pub fn envs_from_yaml(raw_yaml: Option<&serde_yaml::Sequence>) -> Option<HashMap<String, Env>> {
+pub fn from_yaml(raw_yaml: Option<&serde_yaml::Sequence>) -> Option<HashMap<String, Env>> {
     let mut envs = HashMap::new();
     let base_env = get_base_envs(raw_yaml);
     if base_env.is_none() {

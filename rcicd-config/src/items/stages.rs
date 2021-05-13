@@ -19,6 +19,6 @@ pub struct Stage {
     steps: Vec<Step>,
 }
 
-pub fn deploy_from_yaml(raw_yaml: Option<&serde_yaml::Sequence>) {
+pub fn from_yaml(raw_yaml: Option<&serde_yaml::Sequence>) {
     dbg!(raw_yaml);
 }
