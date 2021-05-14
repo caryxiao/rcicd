@@ -1,3 +1,3 @@
 pub fn run() {
-    println!("Deploy Start:");
+    info!("Deploy Start:");
 }

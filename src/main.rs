@@ -1,8 +1,18 @@
+#[macro_use]
+extern crate log;
+extern crate simplelog;
+
 use clap::{load_yaml, App};
 use rcicd_config::config::Conf;
 use rcicd_deploy;
 
 fn main() {
+    simplelog::CombinedLogger::init(vec![simplelog::TermLogger::new(
+        simplelog::LevelFilter::Trace,
+        simplelog::Config::default(),
+        simplelog::TerminalMode::Mixed,
+        simplelog::ColorChoice::Auto,
+    )]);
     let yaml = load_yaml!("cli.yaml");
     let matches = App::from(yaml).get_matches();
     // 分析需要执行build还是publish

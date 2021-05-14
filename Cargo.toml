@@ -17,6 +17,8 @@ members = [
 clap = { version = "3.0.0-beta.2", features = ["yaml"] }
 serde = "1.0"
 serde_yaml = "0.8"
+log = "0.4"
+simplelog = "^0.10.0"
 rcicd-config = { path = "rcicd-config" }
 rcicd-helper = { path = "rcicd-helper" }
 rcicd-deploy = { path = "rcicd-deploy" }
