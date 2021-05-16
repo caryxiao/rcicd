@@ -23,7 +23,7 @@ pub struct Stage {
 
 #[derive(Debug)]
 pub struct Job {
-    name: String,
+    env_name: String,
     stages: Vec<Stage>,
 }
 
@@ -48,7 +48,30 @@ pub fn from_yaml(raw_yaml: Option<&serde_yaml::Sequence>) {
                 .filter(|v| v.is_mapping())
                 .map(|v| v.as_mapping().unwrap())
                 .collect();
-            dbg!(env_names, job);
+
+            for job_conf in job {
+                let stage = create_stage(job_conf);
+            }
         }
     }
+}
+
+fn create_stage(raw_mapping: &serde_yaml::Mapping) {
+    let stage_name = raw_mapping
+        .get(&make_serde_str("stage"))
+        .and_then(|v| v.as_str())
+        .unwrap();
+    let raw_steps = match raw_mapping
+        .get(&make_serde_str("steps"))
+        .and_then(|v| v.as_sequence())
+    {
+        Some(r_steps) => r_steps.to_owned(),
+        None => serde_yaml::Sequence::default(),
+    };
+    // debug!("stage name: {} {:#?}", stage_name, &raw_steps);
+    create_steps(&raw_steps);
+}
+
+fn create_steps(raw_seq: &serde_yaml::Sequence) {
+    dbg!(raw_seq);
 }
