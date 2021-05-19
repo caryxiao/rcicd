@@ -1,21 +1,22 @@
 use crate::items::make_serde_str;
+use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum StepValue {
     String(String),
 }
 
 /// 步骤
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Step {
     /// 调用名称
     /// 比如sh, 目前只有sh
-    invoke_name: String,
+    action: String,
     value: StepValue,
 }
 
 /// 阶段
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Stage {
     name: String,
     steps: Vec<Step>,
@@ -27,7 +28,27 @@ pub struct Job {
     stages: Vec<Stage>,
 }
 
-pub fn from_yaml(raw_yaml: Option<&serde_yaml::Sequence>) {
+impl Step {
+    pub fn new(action: String, value: StepValue) -> Self {
+        Step { action, value }
+    }
+}
+
+impl Stage {
+    pub fn new(name: String, steps: Vec<Step>) -> Self {
+        Stage { name, steps }
+    }
+}
+
+impl Job {
+    pub fn new(env_name: String, stages: Vec<Stage>) -> Self {
+        Job { env_name, stages }
+    }
+}
+
+pub fn from_yaml(raw_yaml: Option<&serde_yaml::Sequence>) -> HashMap<String, Job> {
+    let mut jobs: HashMap<String, Job> = HashMap::new();
+
     for seq_item in raw_yaml.unwrap() {
         if let serde_yaml::Value::Mapping(raw_stage) = seq_item {
             let env_names: Vec<&str> = raw_stage
@@ -49,14 +70,26 @@ pub fn from_yaml(raw_yaml: Option<&serde_yaml::Sequence>) {
                 .map(|v| v.as_mapping().unwrap())
                 .collect();
 
+            let mut stages: Vec<Stage> = Vec::new();
+
             for job_conf in job {
                 let stage = create_stage(job_conf);
+                stages.push(stage);
+            }
+
+            for env_name in env_names.iter() {
+                jobs.insert(
+                    env_name.to_string(),
+                    Job::new(env_name.to_string(), stages.to_owned()),
+                );
             }
         }
     }
+
+    jobs
 }
 
-fn create_stage(raw_mapping: &serde_yaml::Mapping) {
+fn create_stage(raw_mapping: &serde_yaml::Mapping) -> Stage {
     let stage_name = raw_mapping
         .get(&make_serde_str("stage"))
         .and_then(|v| v.as_str())
@@ -69,9 +102,30 @@ fn create_stage(raw_mapping: &serde_yaml::Mapping) {
         None => serde_yaml::Sequence::default(),
     };
     // debug!("stage name: {} {:#?}", stage_name, &raw_steps);
-    create_steps(&raw_steps);
+
+    let steps = create_steps(&raw_steps);
+    let stage = Stage::new(stage_name.to_string(), steps);
+    return stage;
 }
 
-fn create_steps(raw_seq: &serde_yaml::Sequence) {
-    dbg!(raw_seq);
+fn create_steps(raw_seq: &serde_yaml::Sequence) -> Vec<Step> {
+    let mut steps: Vec<Step> = Vec::new();
+    for item in raw_seq {
+        if let serde_yaml::Value::Mapping(step) = item {
+            for (key, value) in step {
+                let action = match key {
+                    serde_yaml::Value::String(act) => act.to_string(),
+                    _ => panic!("action 未解析成功, 请检查配置文件"),
+                };
+                let value = match value {
+                    serde_yaml::Value::String(val) => val.to_string(),
+                    _ => panic!("action 所对应的数据未解析成功, 请检查配置文件"),
+                };
+
+                let step = Step::new(action, StepValue::String(value));
+                steps.push(step);
+            }
+        }
+    }
+    return steps;
 }

@@ -1,4 +1,5 @@
 use crate::items;
+use crate::items::jobs::Job;
 use serde_yaml::Value as serdeValue;
 use std::collections::HashMap;
 use std::error::Error;
@@ -14,6 +15,7 @@ pub struct Conf {
 trait ConfOperation {
     fn set_env(&mut self, env: items::envs::Env);
     fn set_envs(&mut self, envs: HashMap<String, items::envs::Env>);
+    fn set_jobs(&mut self, jobs: HashMap<String, items::jobs::Job>);
 }
 
 impl Conf {
@@ -44,7 +46,8 @@ impl Conf {
                 .unwrap();
             conf.set_envs(items::envs::from_yaml(yaml_raw_envs.as_sequence()).unwrap());
             let yaml_raw_deploy = serde_mapping.get(&items::make_serde_str("jobs")).unwrap();
-            let deploy_res = items::jobs::from_yaml(yaml_raw_deploy.as_sequence());
+            let jobs = items::jobs::from_yaml(yaml_raw_deploy.as_sequence());
+            conf.set_jobs(jobs);
         }
 
         Ok(conf)
@@ -58,5 +61,9 @@ impl ConfOperation for Conf {
 
     fn set_envs(&mut self, envs: HashMap<String, items::envs::Env>) {
         self.envs = envs;
+    }
+
+    fn set_jobs(&mut self, jobs: HashMap<String, Job>) {
+        self.jobs = jobs;
     }
 }
