@@ -44,6 +44,10 @@ impl Job {
     pub fn new(env_name: String, stages: Vec<Stage>) -> Self {
         Job { env_name, stages }
     }
+
+    pub fn get_stages(&self) -> Option<&Vec<Stage>> {
+        Some(&self.stages)
+    }
 }
 
 pub fn from_yaml(raw_yaml: Option<&serde_yaml::Sequence>) -> HashMap<String, Job> {

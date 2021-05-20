@@ -18,6 +18,10 @@ trait ConfOperation {
     fn set_jobs(&mut self, jobs: HashMap<String, items::jobs::Job>);
 }
 
+pub trait GetJob {
+    fn get_job(&self, env_name: &str) -> Option<&Job>;
+}
+
 impl Conf {
     pub fn new() -> Self {
         Conf {
@@ -65,5 +69,11 @@ impl ConfOperation for Conf {
 
     fn set_jobs(&mut self, jobs: HashMap<String, Job>) {
         self.jobs = jobs;
+    }
+}
+
+impl GetJob for Conf {
+    fn get_job(&self, env_name: &str) -> Option<&Job> {
+        self.jobs.get(env_name)
     }
 }
